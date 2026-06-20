@@ -7,17 +7,21 @@ Test cases can be run with the following:
 """
 import os
 import logging
+from service import talisman
 from unittest import TestCase
 from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
 
+
+
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
 BASE_URL = "/accounts"
+HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
 
 
 ######################################################################
@@ -29,6 +33,7 @@ class TestAccountService(TestCase):
     @classmethod
     def setUpClass(cls):
         """Run once before all tests"""
+        talisman.force_https = False
         app.config["TESTING"] = True
         app.config["DEBUG"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
@@ -50,6 +55,32 @@ class TestAccountService(TestCase):
         """Runs once after each test case"""
         db.session.remove()
 
+    def test_security_headers(self):
+      response = self.client.get(
+          "/",
+          environ_overrides=HTTPS_ENVIRON
+      )
+  
+      self.assertEqual(
+          response.headers["X-Frame-Options"],
+          "SAMEORIGIN"
+      )
+  
+      self.assertEqual(
+          response.headers["X-Content-Type-Options"],
+          "nosniff"
+      )
+  
+      self.assertIn(
+          "default-src",
+          response.headers["Content-Security-Policy"]
+      )
+  
+      self.assertEqual(
+          response.headers["Referrer-Policy"],
+          "strict-origin-when-cross-origin"
+      )
+      
     ######################################################################
     #  H E L P E R   M E T H O D S
     ######################################################################
@@ -124,3 +155,13 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     # ADD YOUR TEST CASES HERE ...
+    def test_cors_headers(self):
+        response = self.client.get(
+            "/",
+            environ_overrides=HTTPS_ENVIRON
+        )
+    
+        self.assertEqual(
+            response.headers["Access-Control-Allow-Origin"],
+            "*"
+        )

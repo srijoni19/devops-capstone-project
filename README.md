@@ -1,5 +1,7 @@
 # DevOps Capstone Project
 
+![CI Build](https://github.com/srijoni19/devops-capstone-project/actions/workflows/main.yml/badge.svg)
+
 ## Overview
 
 This project implements a Customer Accounts Microservice for an e-commerce platform. The microservice provides RESTful APIs to manage customer account information, including customer names and addresses.
@@ -33,7 +35,3 @@ The goal of this project is to apply DevOps and Agile development practices by:
 * GitHub Actions
 * Tekton Pipelines
 * OpenShift
-
-## Author
-
-DevOps Capstone Project developed as part of the IBM DevOps and Software Engineering Professional Certificate.

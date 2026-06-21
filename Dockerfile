@@ -3,15 +3,14 @@ FROM python:3.9-slim
 WORKDIR /app
 
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN useradd -ms /bin/bash theia && \
-    chown -R theia /app
+RUN useradd --create-home appuser
+RUN chown -R appuser:appuser /app
 
-USER theia
+USER appuser
 
 EXPOSE 8080
 

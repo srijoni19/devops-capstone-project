@@ -56,31 +56,26 @@ class TestAccountService(TestCase):
         db.session.remove()
 
     def test_security_headers(self):
-      response = self.client.get(
-          "/",
-          environ_overrides=HTTPS_ENVIRON
-      )
-  
-      self.assertEqual(
-          response.headers["X-Frame-Options"],
-          "SAMEORIGIN"
-      )
-  
-      self.assertEqual(
-          response.headers["X-Content-Type-Options"],
-          "nosniff"
-      )
-  
-      self.assertIn(
-          "default-src",
-          response.headers["Content-Security-Policy"]
-      )
-  
-      self.assertEqual(
-          response.headers["Referrer-Policy"],
-          "strict-origin-when-cross-origin"
-      )
-      
+        response = self.client.get(
+            "/",
+            environ_overrides=HTTPS_ENVIRON
+        )
+        self.assertEqual(
+            response.headers["X-Frame-Options"],
+            "SAMEORIGIN"
+        )
+        self.assertEqual(
+            response.headers["X-Content-Type-Options"],
+            "nosniff"
+        )
+        self.assertIn(
+            "default-src",
+            response.headers["Content-Security-Policy"]
+        )
+        self.assertEqual(
+            response.headers["Referrer-Policy"],
+            "strict-origin-when-cross-origin"
+        )
     ######################################################################
     #  H E L P E R   M E T H O D S
     ######################################################################
